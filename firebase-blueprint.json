@@ -1,0 +1,131 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "A registered user of the chat application.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "The unique identifier of the user." },
+        "displayName": { "type": "string", "description": "The user's display name." },
+        "email": { "type": "string", "description": "The user's email address." },
+        "username": { "type": "string", "description": "The user's unique username." },
+        "photoURL": { "type": "string", "description": "The URL of the user's profile picture." },
+        "bio": { "type": "string", "description": "The user's biography." },
+        "lastSeen": { "type": "string", "format": "date-time", "description": "The timestamp when the user was last active." },
+        "status": { "type": "string", "description": "The user's online status (online/offline)." },
+        "settings": { 
+          "type": "object", 
+          "properties": {
+            "theme": { "type": "string" },
+            "wallpaper": { "type": "string" },
+            "readReceipts": { "type": "boolean" },
+            "accentColor": { "type": "string" },
+            "fontSize": { "type": "string" },
+            "bubbleStyle": { "type": "string" },
+            "compactView": { "type": "boolean" },
+            "hideLastSeen": { "type": "boolean" },
+            "hideProfilePic": { "type": "boolean" },
+            "language": { "type": "string" },
+            "timeFormat": { "type": "string" },
+            "customStatus": { "type": "string" },
+            "notificationSound": { "type": "boolean" },
+            "vibration": { "type": "boolean" },
+            "enterIsSend": { "type": "boolean" }
+          }
+        }
+      },
+      "required": ["uid", "displayName", "email", "username"]
+    },
+    "Contact": {
+      "title": "Contact",
+      "description": "A user's contact.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "The UID of the contact." },
+        "displayName": { "type": "string", "description": "The contact's display name." },
+        "email": { "type": "string", "description": "The contact's email address." },
+        "username": { "type": "string", "description": "The contact's username." },
+        "photoURL": { "type": "string", "description": "The URL of the contact's profile picture." },
+        "addedAt": { "type": "string", "format": "date-time", "description": "When the contact was added." }
+      },
+      "required": ["uid", "displayName", "email", "addedAt"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "A chat message sent between two users.",
+      "type": "object",
+      "properties": {
+        "chatId": { "type": "string", "description": "A unique identifier for the conversation, typically the sorted combination of the two user UIDs." },
+        "senderId": { "type": "string", "description": "The UID of the user who sent the message." },
+        "receiverId": { "type": "string", "description": "The UID of the user who receives the message." },
+        "participants": { 
+          "type": "array", 
+          "items": { "type": "string" },
+          "description": "Array containing both senderId and receiverId for querying."
+        },
+        "text": { "type": "string", "description": "The content of the message." },
+        "isEncrypted": { "type": "boolean", "description": "Whether the text is encrypted." },
+        "imageUrl": { "type": "string", "description": "Optional base64 encoded image." },
+        "timestamp": { "type": "string", "format": "date-time", "description": "The time the message was sent." },
+        "read": { "type": "boolean", "description": "Whether the message has been read." },
+        "reactions": { "type": "object", "description": "Map of emoji reactions to arrays of user IDs." },
+        "replyTo": {
+          "type": "object",
+          "description": "Information about the message being replied to",
+          "properties": {
+            "id": { "type": "string" },
+            "text": { "type": "string" },
+            "senderName": { "type": "string" }
+          },
+          "required": ["id", "text", "senderName"]
+        }
+      },
+      "required": ["chatId", "senderId", "receiverId", "participants", "timestamp"]
+    },
+    "TypingStatus": {
+      "title": "TypingStatus",
+      "description": "Represents the typing status of a user in a chat.",
+      "type": "object",
+      "properties": {
+        "isTyping": { "type": "boolean", "description": "Indicates if the user is currently typing." },
+        "timestamp": { "type": "string", "format": "date-time", "description": "Timestamp of the last typing update." }
+      },
+      "required": ["isTyping", "timestamp"]
+    },
+    "SupportTicket": {
+      "title": "Support Ticket",
+      "description": "A support request submitted by a user.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "The UID of the user submitting the ticket." },
+        "email": { "type": "string", "description": "The email of the user." },
+        "message": { "type": "string", "description": "The support message." },
+        "status": { "type": "string", "description": "The status of the ticket (e.g., open, closed)." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "When the ticket was created." }
+      },
+      "required": ["uid", "email", "message", "status", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/support_tickets/{ticketId}": {
+      "schema": { "$ref": "#/entities/SupportTicket" },
+      "description": "Stores user support tickets."
+    },
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Stores user profiles."
+    },
+    "/users/{userId}/contacts/{contactId}": {
+      "schema": { "$ref": "#/entities/Contact" },
+      "description": "Stores a user's contacts."
+    },
+    "/chats/{chatId}/messages/{messageId}": {
+      "schema": { "$ref": "#/entities/Message" },
+      "description": "Stores all chat messages."
+    },
+    "/chats/{chatId}/typing/{userId}": {
+      "schema": { "$ref": "#/entities/TypingStatus" },
+      "description": "Stores typing indicators for users in a chat."
+    }
+  }
+}

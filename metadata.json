@@ -1,0 +1,5 @@
+{
+  "name": "Real-time Chat App",
+  "description": "A WhatsApp Web style real-time chat application with Firebase Auth and Firestore.",
+  "requestFramePermissions": []
+}
